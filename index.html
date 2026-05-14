@@ -1,3 +1,5 @@
+--- START OF FILE index.html ---
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -32,11 +34,29 @@
   .card-title { font-size:.65rem; letter-spacing:.12em; color:var(--accent); text-transform:uppercase; margin-bottom:.85rem; padding-bottom:.5rem; border-bottom:1px solid var(--border); }
   .input-row { display:flex; align-items:center; gap:8px; margin-bottom:.65rem; }
   .input-row:last-of-type { margin-bottom:0; }
-  .input-row label { font-size:.82rem; color:var(--text-dim); min-width:100px; flex-shrink:0; }
-  .input-row input[type=number] { background:var(--surface2); border:1px solid var(--border); border-radius:6px; color:var(--text); font-size:1rem; width:64px; padding:8px; outline:none; -webkit-appearance:none; appearance:none; text-align:center; }
-  .input-row input[type=number]:focus { border-color:var(--accent); }
+  .input-row label { font-size:.82rem; color:var(--text-dim); min-width:80px; flex-shrink:0; }
+
+  /* プルダウンのスタイル */
+  .input-row select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 0.95rem;
+    flex: 1;
+    padding: 8px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235a6a80' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+  }
+  .input-row select:focus { border-color: var(--accent); }
+
+  .input-row input[type=number] { background:var(--surface2); border:1px solid var(--border); border-radius:6px; color:var(--text); font-size:1rem; width:54px; padding:8px; outline:none; -webkit-appearance:none; appearance:none; text-align:center; }
   .input-row .unit { font-size:.82rem; color:var(--text-muted); }
-  .hint { font-size:.65rem; color:var(--text-muted); flex:1; }
   .chip-summary { font-size:.72rem; color:var(--success); margin-top:.75rem; min-height:1em; line-height:1.6; white-space:pre-line; }
   .grade-display { display:flex; align-items:baseline; gap:10px; margin-bottom:1rem; }
   .grade-label { font-size:1.5rem; font-weight:700; color:var(--accent); }
@@ -46,94 +66,103 @@
   .metric-label { font-size:.62rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:.05em; }
   .metric-value { font-size:1.25rem; font-weight:700; color:var(--text); font-variant-numeric:tabular-nums; }
   .metric-sub { font-size:.6rem; color:var(--text-muted); margin-top:2px; }
-  .table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; max-height: 350px; }
   table { width:100%; border-collapse:collapse; font-size:.72rem; min-width:360px; }
-  th { background:var(--surface2); color:var(--text-muted); font-weight:500; text-align:right; padding:6px 8px; border-bottom:1px solid var(--border); white-space:nowrap; }
+  th { background:var(--surface2); color:var(--text-muted); font-weight:500; text-align:right; padding:6px 8px; border-bottom:1px solid var(--border); white-space:nowrap; position: sticky; top: 0; z-index: 1;}
   th:first-child { text-align:left; }
   td { padding:6px 8px; border-bottom:1px solid var(--border); color:var(--text-dim); text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
   td:first-child { color:var(--text); text-align:left; font-weight:500; }
   tr.hl td { background:rgba(0,200,255,0.08); color:var(--accent); }
   tr.hl td:first-child { color:var(--accent); }
+  .chip-group-label { font-size:.6rem; color:var(--text-muted); letter-spacing:.08em; text-transform:uppercase; margin:.6rem 0 .4rem; padding-left:2px; border-left:2px solid var(--border); padding-left:6px; display: flex; justify-content: space-between; align-items: center; }
+  .chip-total-badge { font-size:.65rem; color:var(--text-muted); margin-left:auto; flex-shrink:0; }
+  .chip-total-badge.warn { color:#ffaa44; }
+  .chip-flex-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 0.5rem; }
+  @media (max-width: 400px) { .chip-flex-row { gap: 0.75rem; } .input-row label { min-width: 65px; font-size: 0.75rem; } }
 </style>
 </head>
 <body>
 <header>
   <div class="title">BB 装甲判定ツール</div>
-  <div class="subtitle">ver 3.0以降 ／ ノクバ・吹き飛び閾値チェッカー</div>
+  <div class="subtitle">ver 1.1 ／ ノクバ・吹き飛び閾値チェッカー</div>
 </header>
 
 <div class="card">
   <div class="card-title">装甲設定</div>
   <div class="input-row">
-    <label>装甲値</label>
-    <input type="number" id="armor" min="-50" max="100" value="0" step="1" inputmode="numeric" oninput="calc()">
-    <span class="unit">%</span>
+    <label>基本装甲</label>
+    <select id="armor" onchange="calc()">
+      <!-- JSで画像に基づいたランクを生成 -->
+    </select>
   </div>
 </div>
 
 <div class="card">
   <div class="card-title">チップ補正</div>
-  <div class="input-row">
-    <label>頭部装甲Ⅲ</label>
-    <input type="number" id="ca" min="0" max="1" value="0" inputmode="numeric" oninput="cl(this,0,1)">
-    <span class="unit">枚</span>
-    <span class="hint">最大1 / +5%</span>
+  <div class="chip-flex-row">
+    <div class="chip-col">
+      <div class="chip-group-label">頭部装甲 <span id="ca-total-badge" class="chip-total-badge">0 / 3</span></div>
+      <div class="input-row">
+        <label>頭部装甲</label>
+        <input type="number" id="ca1" min="0" max="3" value="0" inputmode="numeric" oninput="clCA(this)">
+        <span class="unit">枚</span>
+      </div>
+      <div class="input-row">
+        <label>Ⅱ</label>
+        <input type="number" id="ca2" min="0" max="2" value="0" inputmode="numeric" oninput="clCA(this)">
+        <span class="unit">枚</span>
+      </div>
+      <div class="input-row">
+        <label>Ⅲ</label>
+        <input type="number" id="ca3" min="0" max="1" value="0" inputmode="numeric" oninput="clCA(this)">
+        <span class="unit">枚</span>
+      </div>
+    </div>
+    <div class="chip-col">
+      <div class="chip-group-label">転倒耐性 <span id="t-total-badge" class="chip-total-badge">0 / 3</span></div>
+      <div class="input-row">
+        <label>転倒耐性</label>
+        <input type="number" id="t1" min="0" max="3" value="0" inputmode="numeric" oninput="clT(this)">
+        <span class="unit">枚</span>
+      </div>
+      <div class="input-row">
+        <label>Ⅱ</label>
+        <input type="number" id="t2" min="0" max="2" value="0" inputmode="numeric" oninput="clT(this)">
+        <span class="unit">枚</span>
+      </div>
+      <div class="input-row">
+        <label>Ⅲ</label>
+        <input type="number" id="t3" min="0" max="1" value="0" inputmode="numeric" oninput="clT(this)">
+        <span class="unit">枚</span>
+      </div>
+    </div>
   </div>
-  <div class="input-row">
-    <label>転倒耐性</label>
-    <input type="number" id="t1" min="0" max="3" value="0" inputmode="numeric" oninput="cl(this,0,3)">
-    <span class="unit">枚</span>
-    <span class="hint">最大3 / よろけ+400 ダウン+800</span>
-  </div>
-  <div class="input-row">
-    <label>転倒耐性Ⅱ</label>
-    <input type="number" id="t2" min="0" max="2" value="0" inputmode="numeric" oninput="cl(this,0,2)">
-    <span class="unit">枚</span>
-    <span class="hint">最大2 / よろけ+600 ダウン+1200</span>
-  </div>
-  <div class="input-row">
-    <label>転倒耐性Ⅲ</label>
-    <input type="number" id="t3" min="0" max="1" value="0" inputmode="numeric" oninput="cl(this,0,1)">
-    <span class="unit">枚</span>
-    <span class="hint">最大1 / よろけ+800 ダウン+1600</span>
-  </div>
-  
-  <div class="input-row">
+  <div class="input-row" style="margin-top:.4rem; border-top:1px solid var(--border); padding-top:.8rem;">
     <label>攻撃属性</label>
-
     <label style="min-width:auto; display:flex; align-items:center; gap:4px;">
-      <input type="checkbox" id="normalAttack" checked disabled>
-      通常
+      <input type="checkbox" id="normalAttack" checked disabled> 通常
     </label>
-
     <label style="min-width:auto; display:flex; align-items:center; gap:4px;">
-      <input type="checkbox" id="newdAttack" onchange="toggleNewd()">
-      ニュード
+      <input type="checkbox" id="newdAttack" onchange="toggleNewd()"> ニュード
     </label>
   </div>
-
   <div id="newdArea" style="display:none;">
-  <div class="input-row">
-    <label>対ニュード防御</label>
-    <input type="number" id="n1" min="0" max="3" value="0" inputmode="numeric" oninput="cl(this,0,3)">
-    <span class="unit">枚</span>
-    <span class="hint">最大3 / ニュード軽減6%</span>
-  </div>
-
-  <div class="input-row">
-    <label>対ニュード防御Ⅱ</label>
-    <input type="number" id="n2" min="0" max="2" value="0" inputmode="numeric" oninput="cl(this,0,2)">
-    <span class="unit">枚</span>
-    <span class="hint">最大2 / ニュード軽減9%</span>
-  </div>
-
-  <div class="input-row">
-    <label>対ニュード防御Ⅲ</label>
-    <input type="number" id="n3" min="0" max="1" value="0" inputmode="numeric" oninput="cl(this,0,1)">
-    <span class="unit">枚</span>
-    <span class="hint">最大1 / ニュード軽減12%</span>
-  </div>
-
+    <div class="chip-group-label" style="margin-top:.6rem;">対ニュード防御 <span id="n-total-badge" class="chip-total-badge">0 / 3</span></div>
+    <div class="input-row">
+      <label>対ND防御</label>
+      <input type="number" id="n1" min="0" max="3" value="0" inputmode="numeric" oninput="clN(this)">
+      <span class="unit">枚</span>
+    </div>
+    <div class="input-row">
+      <label>Ⅱ</label>
+      <input type="number" id="n2" min="0" max="2" value="0" inputmode="numeric" oninput="clN(this)">
+      <span class="unit">枚</span>
+    </div>
+    <div class="input-row">
+      <label>Ⅲ</label>
+      <input type="number" id="n3" min="0" max="1" value="0" inputmode="numeric" oninput="clN(this)">
+      <span class="unit">枚</span>
+    </div>
   </div>
   <div class="chip-summary" id="chip-summary"></div>
 </div>
@@ -145,124 +174,134 @@
     <div class="grade-sub" id="grade-sub">装甲 —</div>
   </div>
   <div class="result-grid">
-    <div class="metric">
-      <div class="metric-label">ノクバ（射撃）</div>
-      <div class="metric-value" id="ns">—</div>
-      <div class="metric-sub">以上でノクバ</div>
-    </div>
-    <div class="metric">
-      <div class="metric-label">吹き飛び（射撃）</div>
-      <div class="metric-value" id="bs">—</div>
-      <div class="metric-sub">以上で吹き飛び</div>
-    </div>
-    <div class="metric">
-      <div class="metric-label">ノクバ（格闘）</div>
-      <div class="metric-value" id="nm">—</div>
-      <div class="metric-sub">以上でノクバ</div>
-    </div>
-    <div class="metric">
-      <div class="metric-label">吹き飛び（格闘）</div>
-      <div class="metric-value" id="bm">—</div>
-      <div class="metric-sub">以上で吹き飛び</div>
-    </div>
+    <div class="metric"><div class="metric-label">ノクバ（射）</div><div class="metric-value" id="ns">—</div></div>
+    <div class="metric"><div class="metric-label">吹き飛び（射）</div><div class="metric-value" id="bs">—</div></div>
+    <div class="metric"><div class="metric-label">ノクバ（格）</div><div class="metric-value" id="nm">—</div></div>
+    <div class="metric"><div class="metric-label">吹き飛び（格）</div><div class="metric-value" id="bm">—</div></div>
   </div>
   <div class="table-wrap">
     <table>
-      <thead>
-        <tr><th>評価</th><th>装甲%</th><th>ノクバ射撃</th><th>吹き飛び射撃</th><th>ノクバ格闘</th><th>吹き飛び格闘</th></tr>
-      </thead>
+      <thead><tr><th>評価</th><th>装甲%</th><th>ノク射</th><th>吹射</th><th>ノク格</th><th>吹格</th></tr></thead>
       <tbody id="tbody"></tbody>
     </table>
   </div>
 </div>
 
 <script>
+// 元々の数値体系を定義 (0% = 3500)
+// 画像にある中間ランク（35%, 18%等）も元の計算式(Base / (1 - p/100))で追加
 const G=[
   {l:"MAX",p:50, ns:7000, bs:14000,nm:6000, bm:12000},
-  {l:"S+", p:43, ns:6141, bs:12281,nm:5264, bm:10527},
-  {l:"S",  p:37, ns:5556, bs:11112,nm:4762, bm:9524 },
-  {l:"S-", p:32, ns:5148, bs:10295,nm:4412, bm:8824 },
-  {l:"A+", p:29, ns:4930, bs:9860, nm:4226, bm:8451 },
-  {l:"A",  p:23, ns:4546, bs:9091, nm:3897, bm:7793 },
-  {l:"A-", p:19, ns:4321, bs:8642, nm:3704, bm:7408 },
-  {l:"B+", p:16, ns:4167, bs:8334, nm:3572, bm:7143 },
-  {l:"B",  p:12, ns:3978, bs:7955, nm:3410, bm:6819 },
-  {l:"B-", p:8,  ns:3805, bs:7609, nm:3261, bm:6522 },
+  {l:"S+", p:43, ns:6140, bs:12281,nm:5263, bm:10526},
+  {l:"S",  p:37, ns:5556, bs:11111,nm:4762, bm:9524 },
+  {l:"S",  p:35, ns:5385, bs:10769,nm:4615, bm:9231 },
+  {l:"S-", p:32, ns:5147, bs:10294,nm:4412, bm:8824 },
+  {l:"A+", p:29, ns:4930, bs:9859, nm:4225, bm:8451 },
+  {l:"A",  p:23, ns:4545, bs:9091, nm:3896, bm:7792 },
+  {l:"A-", p:19, ns:4321, bs:8642, nm:3704, bm:7407 },
+  {l:"A-", p:18, ns:4268, bs:8537, nm:3659, bm:7317 },
+  {l:"B+", p:16, ns:4167, bs:8333, nm:3571, bm:7143 },
+  {l:"B+", p:14, ns:4070, bs:8140, nm:3488, bm:6977 },
+  {l:"B",  p:12, ns:3977, bs:7955, nm:3409, bm:6818 },
+  {l:"B-", p:8,  ns:3804, bs:7609, nm:3261, bm:6522 },
+  {l:"B-", p:6,  ns:3723, bs:7447, nm:3191, bm:6383 },
   {l:"C+", p:4,  ns:3646, bs:7292, nm:3125, bm:6250 },
+  {l:"C",  p:1,  ns:3535, bs:7071, nm:3030, bm:6061 },
   {l:"C",  p:0,  ns:3500, bs:7000, nm:3000, bm:6000 },
-  {l:"C-", p:-5, ns:3334, bs:6667, nm:2858, bm:5715 },
-  {l:"D+", p:-8, ns:3241, bs:6482, nm:2778, bm:5556 },
-  {l:"D",  p:-12,ns:3125, bs:6250, nm:2679, bm:5358 },
-  {l:"D-", p:-17,ns:2992, bs:5983, nm:2565, bm:5129 },
-  {l:"E+", p:-20,ns:2917, bs:5834, nm:2500, bm:5000 },
-  {l:"E",  p:-24,ns:2823, bs:5646, nm:2420, bm:4839 },
+  {l:"C-", p:-2, ns:3431, bs:6863, nm:2941, bm:5882 },
+  {l:"C-", p:-4, ns:3365, bs:6731, nm:2885, bm:5769 },
+  {l:"C-", p:-5, ns:3333, bs:6667, nm:2857, bm:5714 },
+  {l:"D+", p:-8, ns:3241, bs:6481, nm:2778, bm:5556 },
+  {l:"D",  p:-11,ns:3153, bs:6306, nm:2703, bm:5405 },
+  {l:"D",  p:-12,ns:3125, bs:6250, nm:2679, bm:5357 },
+  {l:"D-", p:-14,ns:3070, bs:6140, nm:2632, bm:5263 },
+  {l:"D-", p:-17,ns:2991, bs:5983, nm:2564, bm:5128 },
+  {l:"E+", p:-20,ns:2917, bs:5833, nm:2500, bm:5000 },
+  {l:"E",  p:-24,ns:2823, bs:5645, nm:2419, bm:4839 },
 ];
+
+// プルダウン生成 (MAXは除外)
+const select = document.getElementById('armor');
+G.forEach((r, i) => {
+  if(r.l === "MAX") return;
+  const opt = document.createElement('option');
+  opt.value = r.p;
+  opt.textContent = `${r.l} (${r.p >= 0 ? '+' : ''}${r.p}%)`;
+  if(r.p === 0) opt.selected = true;
+  select.appendChild(opt);
+});
+
 function idx(p){ for(let i=0;i<G.length;i++) if(p>=G[i].p) return i; return G.length-1; }
 function interp(p){
   for(let i=0;i<G.length-1;i++){
     const h=G[i],l=G[i+1];
-    if(p<=h.p&&p>=l.p){ const t=(p-l.p)/(h.p-l.p); return {ns:Math.round(l.ns+(h.ns-l.ns)*t),bs:Math.round(l.bs+(h.bs-l.bs)*t),nm:Math.round(l.nm+(h.nm-l.nm)*t),bm:Math.round(l.bm+(h.bm-l.bm)*t)}; }
+    if(p<=h.p&&p>=l.p){
+      const t=(p-l.p)/(h.p-l.p);
+      return {ns:Math.round(l.ns+(h.ns-l.ns)*t),bs:Math.round(l.bs+(h.bs-l.bs)*t),nm:Math.round(l.nm+(h.nm-l.nm)*t),bm:Math.round(l.bm+(h.bm-l.bm)*t)};
+    }
   }
   return p>=G[0].p?G[0]:G[G.length-1];
 }
 function fmt(n){ return Math.round(n).toLocaleString('ja-JP'); }
-function cl(el,mn,mx){ el.value=Math.max(mn,Math.min(mx,parseInt(el.value)||0)); calc(); }
 function g(id){ return parseInt(document.getElementById(id).value)||0; }
 
-
-function toggleNewd(){
-  const enabled=document.getElementById('newdAttack').checked;
-  document.getElementById('newdArea').style.display=enabled?'block':'none';
+function clCA(changed){
+  const c1=document.getElementById('ca1'), c2=document.getElementById('ca2'), c3=document.getElementById('ca3');
+  let v1=Math.max(0,Math.min(3,parseInt(c1.value)||0)), v2=Math.max(0,Math.min(2,parseInt(c2.value)||0)), v3=Math.max(0,Math.min(1,parseInt(c3.value)||0));
+  if(v1+v2+v3>3){
+    let over=(v1+v2+v3)-3;
+    if(changed.id==='ca1'){ const m=Math.min(v3,over); v3-=m; const m2=Math.min(v2,over-m); v2-=m2; }
+    else if(changed.id==='ca2'){ const m=Math.min(v3,over); v3-=m; const m2=Math.min(v1,over-m); v1-=m2; }
+    else { const m=Math.min(v2,over); v2-=m; const m2=Math.min(v1,over-m); v1-=m2; }
+  }
+  c1.value=v1; c2.value=v2; c3.value=v3;
+  const b=document.getElementById('ca-total-badge'); b.textContent=`合計 ${v1+v2+v3} / 3`; b.className='chip-total-badge'+(v1+v2+v3>=3?' warn':'');
   calc();
 }
 
+function clGroup(changed, ids, caps, badgeId, limit){
+  const els=ids.map(id=>document.getElementById(id));
+  let vs=els.map((el,i)=>Math.max(0,Math.min(caps[i],parseInt(el.value)||0)));
+  if(vs.reduce((a,b)=>a+b,0)>limit){
+    let over=vs.reduce((a,b)=>a+b,0)-limit; const ci=ids.indexOf(changed.id);
+    for(let k=ids.length-1;k>=0&&over>0;k--){ if(k!==ci){ const cut=Math.min(vs[k],over); vs[k]-=cut; over-=cut; } }
+  }
+  els.forEach((el,i)=>el.value=vs[i]);
+  const nt=vs.reduce((a,b)=>a+b,0);
+  const b=document.getElementById(badgeId); b.textContent=`合計 ${nt} / ${limit}`; b.className='chip-total-badge'+(nt>=limit?' warn':'');
+  calc();
+}
+function clT(changed){ clGroup(changed,['t1','t2','t3'],[3,2,1],'t-total-badge',3); }
+function clN(changed){ clGroup(changed,['n1','n2','n3'],[3,2,1],'n-total-badge',3); }
+function toggleNewd(){ document.getElementById('newdArea').style.display=document.getElementById('newdAttack').checked?'block':'none'; calc(); }
+
 function calc(){
   const base=parseFloat(document.getElementById('armor').value)||0;
-  const ca=Math.min(1,Math.max(0,g('ca')));
-  const t1=Math.min(3,Math.max(0,g('t1')));
-  const t2=Math.min(2,Math.max(0,g('t2')));
-  const t3=Math.min(1,Math.max(0,g('t3')));
-  const n1=Math.min(3,Math.max(0,g('n1')));
-  const n2=Math.min(2,Math.max(0,g('n2')));
-  const n3=Math.min(1,Math.max(0,g('n3')));
-  const isNewd=document.getElementById('newdAttack').checked;
+  const ca1=g('ca1'), ca2=g('ca2'), ca3=g('ca3'), t1=g('t1'), t2=g('t2'), t3=g('t3'), n1=g('n1'), n2=g('n2'), n3=g('n3');
+  const isN=document.getElementById('newdAttack').checked;
+  const caBonus=ca1*3+ca2*4+ca3*5, totalArmor=base+caBonus;
+  const bN=t1*400+t2*600+t3*800, bD=t1*800+t2*1200+t3*1600;
+  const i=idx(totalArmor), v=interp(totalArmor);
+  let nCut=isN?(n1*0.06+n2*0.09+n3*0.12):0;
 
-  const total=base+ca*5;
-  const bN=t1*400+t2*600+t3*800;
-  const bD=t1*800+t2*1200+t3*1600;
-  const i=idx(total), v=interp(total);
+  const nsV=Math.round((v.ns+bN)/(1-nCut)), bsV=Math.round((v.bs+bD)/(1-nCut)), nmV=Math.round((v.nm+bN)/(1-nCut)), bmV=Math.round((v.bm+bD)/(1-nCut));
 
-  let newdCut = 0;
-  if(isNewd){
-    newdCut += n1 * 0.06;
-    newdCut += n2 * 0.09;
-    newdCut += n3 * 0.12;
-  }
-
-  const nsVal = Math.round((v.ns+bN) / (1-newdCut));
-  const bsVal = Math.round((v.bs+bD) / (1-newdCut));
-  const nmVal = Math.round((v.nm+bN) / (1-newdCut));
-  const bmVal = Math.round((v.bm+bD) / (1-newdCut));
-
-  document.getElementById('ns').textContent=fmt(nsVal);
-  document.getElementById('bs').textContent=fmt(bsVal);
-  document.getElementById('nm').textContent=fmt(nmVal);
-  document.getElementById('bm').textContent=fmt(bmVal);
+  document.getElementById('ns').textContent=fmt(nsV);
+  document.getElementById('bs').textContent=fmt(bsV);
+  document.getElementById('nm').textContent=fmt(nmV);
+  document.getElementById('bm').textContent=fmt(bmV);
   document.getElementById('grade-label').textContent=G[i].l;
-  document.getElementById('grade-sub').textContent=`装甲 ${total>=0?'+':''}${total.toFixed(0)}%（チップ込み）`;
-  const pts=[];
-  if(ca) pts.push(`頭部装甲Ⅲ×1: +5%`);
-  if(t1) pts.push(`転倒耐性×${t1}: よろけ+${t1*400} / ダウン+${t1*800}`);
-  if(t2) pts.push(`転倒耐性Ⅱ×${t2}: よろけ+${t2*600} / ダウン+${t2*1200}`);
-  if(t3) pts.push(`転倒耐性Ⅲ×${t3}: よろけ+${t3*800} / ダウン+${t3*1600}`);
-  if(isNewd && n1) pts.push(`対ニュード防御×${n1}: ${n1*6}%軽減`);
-  if(isNewd && n2) pts.push(`対ニュード防御Ⅱ×${n2}: ${n2*9}%軽減`);
-  if(isNewd && n3) pts.push(`対ニュード防御Ⅲ×${n3}: ${n3*12}%軽減`);
+  document.getElementById('grade-sub').textContent=`装甲 ${totalArmor>=0?'+':''}${totalArmor}% (補正込)`;
 
+  const pts=[];
+  if(caBonus) pts.push(`頭部装甲チップ: +${caBonus}%`);
+  if(bN) pts.push(`転倒耐性: よろけ+${bN} / ダウン+${bD}`);
+  if(isN && nCut) pts.push(`対ニュード防御: ${Math.round(nCut*100)}%軽減`);
   document.getElementById('chip-summary').textContent=pts.join('\n');
+
   let html='';
   for(let j=0;j<G.length;j++){
-    const r=G[j],hl=j===i;
+    const r=G[j], hl=j===i;
     html+=`<tr class="${hl?'hl':''}"><td>${r.l}</td><td>${r.p>=0?'+':''}${r.p}%</td><td>${fmt(r.ns+bN)}</td><td>${fmt(r.bs+bD)}</td><td>${fmt(r.nm+bN)}</td><td>${fmt(r.bm+bD)}</td></tr>`;
   }
   document.getElementById('tbody').innerHTML=html;
